@@ -1,6 +1,7 @@
 defmodule Fisher.Discord.Actions do
   @available_commands [
-    :create_user
+    :create_user,
+    :fish
   ]
 
   defp create_option(type, name, description, opts \\ []) do
@@ -14,6 +15,10 @@ defmodule Fisher.Discord.Actions do
     ]
 
     %{name: "create", description: "Create a user", options: options}
+  end
+
+  defp command(:fish) do
+    %{name: "fish", description: "Fish for a fish", options: []}
   end
 
   def commands() do
