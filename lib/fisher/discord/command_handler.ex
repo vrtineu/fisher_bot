@@ -28,11 +28,20 @@ defmodule Fisher.Discord.CommandHandler do
   end
 
   defp setup_fishing(user_id) do
-    if Server.session_exists?(user_id) do
-      Server.get_session(user_id)
-    else
-      Server.start_link(user_id, Fisher.Game.Board.draw({9, 9}))
-      Server.get_session(user_id)
+    case Server.session_exists?(user_id) do
+      true ->
+        Server.get_session(user_id)
+
+      _ ->
+        create_new_session(user_id)
+        Server.get_session(user_id)
+    end
+  end
+
+  defp create_new_session(user_id) do
+    case Fisher.Game.Board.new({5, 5}, elements: true) do
+      {:ok, board} -> Server.start_link(user_id, board)
+      {:error, reason} -> Logger.error("Error creating board: #{reason}")
     end
   end
 end
