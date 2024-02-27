@@ -1,43 +1,41 @@
 defmodule Fisher.Game.Server do
   use GenServer
 
-  def start_link(initial_state \\ %{}) do
-    GenServer.start_link(__MODULE__, initial_state, name: __MODULE__)
+  alias Fisher.Game.Session
+
+  #######################
+  #     Server API      #
+  #######################
+
+  def start_link(user_id, board) do
+    session = Session.new(user_id, true, board)
+    GenServer.start_link(__MODULE__, session, name: via_tuple(user_id))
   end
 
-  def start_fishing(user_id) do
-    GenServer.call(__MODULE__, {:start_fishing, user_id})
+  def get_session(user_id) do
+    GenServer.call(via_tuple(user_id), :get_session)
   end
 
-  def stop_fishing(user_id) do
-    GenServer.call(__MODULE__, {:stop_fishing, user_id})
-  end
-
-  # Callbacks
-  def init(initial_state) do
-    {:ok, initial_state}
-  end
-
-  def handle_call({:start_fishing, user_id}, _from, state) do
-    case Map.get(state, user_id) do
-      nil ->
-        {:reply, :ok, Map.put(state, user_id, %{fishing: true})}
-
-      %{fishing: true} ->
-        {:reply, {:error, :already_fishing}, state}
-
-      _ ->
-        {:reply, :ok, Map.put(state, user_id, %{fishing: true})}
+  def session_exists?(user_id) do
+    case GenServer.whereis(via_tuple(user_id)) do
+      nil -> false
+      _ -> true
     end
   end
 
-  def handle_call({:stop_fishing, user_id}, _from, state) do
-    case Map.get(state, user_id) do
-      nil ->
-        {:reply, {:error, :not_fishing}, state}
+  defp via_tuple(user_id) do
+    {:via, Registry, {Fisher.GameRegistry, user_id}}
+  end
 
-      _ ->
-        {:reply, :ok, Map.delete(state, user_id)}
-    end
+  #######################
+  #      Callbacks      #
+  #######################
+
+  @impl true
+  def init(session), do: {:ok, session}
+
+  @impl true
+  def handle_call(:get_session, _from, session) do
+    {:reply, session, session}
   end
 end

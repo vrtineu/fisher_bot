@@ -10,8 +10,8 @@ defmodule Fisher.Application do
     children = [
       # Starts a worker by calling: Fisher.Worker.start_link(arg)
       # {Fisher.Worker, arg}
-      Fisher.Discord.Supervisor,
-      Fisher.Game.Supervisor
+      {Registry, keys: :unique, name: Fisher.GameRegistry},
+      Fisher.Discord.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -25,7 +25,7 @@ defmodule Fisher.Discord.Consumer do
 
   def handle_event({:INTERACTION_CREATE, interaction, _ws_state}) do
     message =
-      case forward_interaction(interaction) |> IO.inspect() do
+      case forward_interaction(interaction) do
         {:msg, msg} -> msg
         _ -> Message.emoji(:white_check_mark)
       end
