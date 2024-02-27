@@ -1,20 +1,22 @@
 defmodule Fisher.Discord.Actions do
-  opt = fn type, name, desc, opts ->
-    %{type: type, name: name, description: desc}
+  @available_commands [
+    :create_user
+  ]
+
+  defp create_option(type, name, description, opts \\ []) do
+    %{type: type, name: name, description: description}
     |> Map.merge(Enum.into(opts, %{}))
   end
 
-  @opts [
-    opt.(:string, "name", "The name of the user", required: true),
-    opt.(:string, "desc", "The description of the user", required: true)
-  ]
+  defp command(:create_user) do
+    options = [
+      create_option(3, "name", "The name of the user")
+    ]
 
-  @commands [
-    {"ping", "Ping the bot", []},
-    {"create", "Create a user", @opts},
-    {"echo", "Echo a message", @opts},
-    {"fish", "Draw a fish", []}
-  ]
+    %{name: "create", description: "Create a user", options: options}
+  end
 
-  def commands, do: @commands
+  def commands() do
+    Enum.map(@available_commands, &command/1)
+  end
 end

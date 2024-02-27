@@ -1,5 +1,6 @@
 defmodule Fisher.Discord.Consumer do
   use Nostrum.Consumer
+
   alias Fisher.Game.CommandHandler
   alias Fisher.Discord.{Actions, Message}
   alias Nostrum.Api
@@ -7,11 +8,11 @@ defmodule Fisher.Discord.Consumer do
   require Logger
 
   def create_guild_commands(guild_id) do
-    Enum.each(Actions.commands(), fn {name, description, options} ->
+    Enum.each(Actions.commands(), fn command ->
       Api.create_guild_application_command(guild_id, %{
-        name: name,
-        description: description,
-        options: options
+        name: command.name,
+        description: command.description,
+        options: command.options
       })
     end)
   end
