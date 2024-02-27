@@ -1,4 +1,6 @@
 defmodule Fisher.Game.Board do
+  alias Fisher.Discord.Message
+
   @board [
     [:water, :water, :water, :water, :water, :water, :water, :water, :water, :water],
     [:water, :water, :water, :water, :water, :water, :water, :water, :water, :water],
@@ -23,16 +25,11 @@ defmodule Fisher.Game.Board do
   defp mount_string(board) do
     Enum.reduce(board, "", fn row, acc ->
       Enum.reduce(row, acc, fn cell, acc ->
-        acc <> emoji(cell)
+        acc <> Message.emoji(cell)
       end) <>
         "\n"
     end)
   end
-
-  defp emoji(:water), do: ":sweat_drops:"
-  defp emoji(:fish), do: ":tropical_fish:"
-  defp emoji(:rod), do: ":fishing_pole_and_fish:"
-  defp emoji(_), do: ":white_large_square:"
 
   defp random_position() do
     {Enum.random(0..4), Enum.random(0..4)}
