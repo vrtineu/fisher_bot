@@ -1,6 +1,7 @@
 defmodule Fisher.Game.CommandHandler do
   require Logger
 
+  alias Fisher.Discord.Message
   alias Fisher.Game.Session
   alias Fisher.Game.Server
 
@@ -14,7 +15,7 @@ defmodule Fisher.Game.CommandHandler do
     # tmp user_id, should be from the interaction
     user_id = "1"
     %Session{board: board} = setup_fishing(user_id)
-    {:msg, board}
+    {:msg, Message.board_parser(board)}
   end
 
   def do_command(%{data: %{name: "create", options: [%{value: value}]}}) do
@@ -30,7 +31,7 @@ defmodule Fisher.Game.CommandHandler do
     if Server.session_exists?(user_id) do
       Server.get_session(user_id)
     else
-      Server.start_link(user_id, Fisher.Game.Board.draw())
+      Server.start_link(user_id, Fisher.Game.Board.draw({9, 9}))
       Server.get_session(user_id)
     end
   end
