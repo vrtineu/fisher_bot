@@ -1,7 +1,7 @@
 defmodule Fisher.Discord.Consumer do
   use Nostrum.Consumer
 
-  alias Fisher.Game.CommandHandler
+  alias Fisher.Discord.CommandHandler
   alias Fisher.Discord.{Actions, Message}
   alias Nostrum.Api
 

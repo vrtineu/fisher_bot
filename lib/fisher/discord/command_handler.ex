@@ -1,4 +1,4 @@
-defmodule Fisher.Game.CommandHandler do
+defmodule Fisher.Discord.CommandHandler do
   require Logger
 
   alias Fisher.Discord.Message
