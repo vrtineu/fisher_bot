@@ -1,14 +1,15 @@
 defmodule Fisher.Game.Server do
   use GenServer
 
-  alias Fisher.Game.{Board, Session}
+  alias Fisher.Game
+  alias Fisher.Game.Board
 
   #######################
   #     Server API      #
   #######################
 
   def start_link(user_id, board) do
-    session = Session.new(user_id, true, board)
+    session = Game.new(user_id, true, board)
     GenServer.start_link(__MODULE__, session, name: via_tuple(user_id))
   end
 
@@ -29,7 +30,7 @@ defmodule Fisher.Game.Server do
 
   def move_rod(user_id, direction) do
     case get_session(user_id) do
-      %Session{board: board} ->
+      %Game{board: board} ->
         new_board = Board.move_rod(board, direction)
         GenServer.call(via_tuple(user_id), {:update_board, new_board})
     end

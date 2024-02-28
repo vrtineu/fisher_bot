@@ -1,4 +1,4 @@
-defmodule Fisher.Game.Session do
+defmodule Fisher.Game do
   alias Fisher.Game.{Board, Server}
 
   require Logger

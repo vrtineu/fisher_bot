@@ -1,6 +1,7 @@
 defmodule Fisher.Discord.Commands.MoveRod do
   alias Fisher.Discord.Message
-  alias Fisher.Game.{Server, Session}
+  alias Fisher.Game
+  alias Fisher.Game.Server
 
   @behaviour Nosedrum.ApplicationCommand
 
@@ -17,7 +18,7 @@ defmodule Fisher.Discord.Commands.MoveRod do
       }) do
     with true <- Server.session_exists?(user_id) do
       Server.move_rod(user_id, String.to_atom(direction))
-      %Session{board: board} = Session.get_session(user_id)
+      %Game{board: board} = Game.get_session(user_id)
       {:msg}
 
       [content: Message.board_parser(board), ephemeral?: false]

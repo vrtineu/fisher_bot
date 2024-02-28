@@ -1,6 +1,6 @@
 defmodule Fisher.Discord.Commands.Fish do
   alias Fisher.Discord.Message
-  alias Fisher.Game.Session
+  alias Fisher.Game
 
   require Logger
 
@@ -14,7 +14,7 @@ defmodule Fisher.Discord.Commands.Fish do
 
   @impl true
   def command(%{member: %{user_id: user_id}}) do
-    %Session{board: board} = Session.get_session!(user_id)
+    %Game{board: board} = Game.get_session!(user_id)
 
     [
       content: Message.board_parser(board),
