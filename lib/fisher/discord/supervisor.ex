@@ -7,7 +7,8 @@ defmodule Fisher.Discord.Supervisor do
 
   def init(_) do
     children = [
-      {Fisher.Discord.Consumer, []}
+      {Fisher.Discord.Consumer, []},
+      {Nosedrum.Storage.Dispatcher, name: Nosedrum.Storage.Dispatcher}
     ]
 
     opts = [strategy: :one_for_one, name: __MODULE__]
