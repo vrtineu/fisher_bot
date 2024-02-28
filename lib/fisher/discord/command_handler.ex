@@ -4,10 +4,7 @@ defmodule Fisher.Discord.CommandHandler do
   alias Fisher.Discord.Message
   alias Fisher.Game.{Board, Server, Session}
 
-  def do_command(%{data: %{name: "fish"}} = interaction) do
-    IO.inspect(interaction, label: "Interaction")
-    # tmp user_id, should be from the interaction
-    user_id = "1"
+  def do_command(%{data: %{name: "fish"}, member: %{user_id: user_id}}) do
     %Session{board: board} = setup_fishing(user_id)
     {:msg, Message.board_parser(board)}
   end
