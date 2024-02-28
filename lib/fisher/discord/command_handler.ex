@@ -2,16 +2,10 @@ defmodule Fisher.Discord.CommandHandler do
   require Logger
 
   alias Fisher.Discord.Message
-  alias Fisher.Game.Session
-  alias Fisher.Game.Server
+  alias Fisher.Game.{Board, Server, Session}
 
-  def do_command(%{data: %{name: "ping"}}), do: {:msg, "Pong!"}
-
-  def do_command(%{data: %{name: "echo", options: [%{options: [%{value: value}]}]}}) do
-    {:msg, value}
-  end
-
-  def do_command(%{data: %{name: "fish"}}) do
+  def do_command(%{data: %{name: "fish"}} = interaction) do
+    IO.inspect(interaction, label: "Interaction")
     # tmp user_id, should be from the interaction
     user_id = "1"
     %Session{board: board} = setup_fishing(user_id)
@@ -39,7 +33,7 @@ defmodule Fisher.Discord.CommandHandler do
   end
 
   defp create_new_session(user_id) do
-    case Fisher.Game.Board.new({5, 5}, elements: true) do
+    case Board.new({12, 12}, elements: true) do
       {:ok, board} -> Server.start_link(user_id, board)
       {:error, reason} -> Logger.error("Error creating board: #{reason}")
     end
