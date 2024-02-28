@@ -40,11 +40,11 @@ defmodule Fisher.Game.Board do
 
   def new(_, _), do: {:error, "Invalid board size"}
 
-  defp size_is_valid?(x), do: x > 0 and x < 13
+  defp size_is_valid?(x), do: x > 0 and x < 12
 
   defp matrix({x_size, y_size}) do
-    Enum.map(0..(x_size - 1), fn _ ->
-      Enum.map(0..(y_size - 1), fn _ ->
+    Enum.map(0..x_size, fn _ ->
+      Enum.map(0..y_size, fn _ ->
         :water
       end)
     end)
@@ -76,5 +76,51 @@ defmodule Fisher.Game.Board do
         end
       end)
     end)
+  end
+
+  def move_rod(matrix, :up) do
+    [{x, y}] = find_player_rod(matrix)
+    new_x = x - 1
+    new_y = y
+    move_player_rod(matrix, {x, y}, {new_x, new_y})
+  end
+
+  def move_rod(matrix, :down) do
+    [{x, y}] = find_player_rod(matrix)
+    new_x = x + 1
+    new_y = y
+    move_player_rod(matrix, {x, y}, {new_x, new_y})
+  end
+
+  def move_rod(matrix, :left) do
+    [{x, y}] = find_player_rod(matrix)
+    new_x = x
+    new_y = y - 1
+    move_player_rod(matrix, {x, y}, {new_x, new_y})
+  end
+
+  def move_rod(matrix, :right) do
+    [{x, y}] = find_player_rod(matrix)
+    new_x = x
+    new_y = y + 1
+    move_player_rod(matrix, {x, y}, {new_x, new_y})
+  end
+
+  def find_player_rod(matrix) do
+    for {row, row_index} <- Enum.with_index(matrix),
+        {cell, cell_index} <- Enum.with_index(row),
+        cell == :fishing_rod do
+      {row_index, cell_index}
+    end
+  end
+
+  def move_player_rod(matrix, {x, y}, {new_x, new_y}) do
+    matrix
+    |> place_player_rod({new_x, new_y})
+    |> remove_player_rod({x, y})
+  end
+
+  def remove_player_rod(matrix, {x, y}) do
+    place_on_matrix(matrix, {x, y}, :water)
   end
 end

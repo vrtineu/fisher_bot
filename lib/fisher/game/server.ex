@@ -1,7 +1,7 @@
 defmodule Fisher.Game.Server do
   use GenServer
 
-  alias Fisher.Game.Session
+  alias Fisher.Game.{Board, Session}
 
   #######################
   #     Server API      #
@@ -27,6 +27,14 @@ defmodule Fisher.Game.Server do
     {:via, Registry, {Fisher.GameRegistry, user_id}}
   end
 
+  def move_rod(user_id, direction) do
+    case get_session(user_id) do
+      %Session{board: board} ->
+        new_board = Board.move_rod(board, direction)
+        GenServer.cast(via_tuple(user_id), {:update_board, new_board})
+    end
+  end
+
   #######################
   #      Callbacks      #
   #######################
@@ -37,5 +45,10 @@ defmodule Fisher.Game.Server do
   @impl true
   def handle_call(:get_session, _from, session) do
     {:reply, session, session}
+  end
+
+  @impl true
+  def handle_cast({:update_board, new_board}, session) do
+    {:noreply, %Session{session | board: new_board}}
   end
 end
