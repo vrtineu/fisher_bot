@@ -24,16 +24,23 @@ defmodule Fisher.Game.Board do
           {:ok, list(list(atom))} | {:error, String.t()}
   def new(xy_size, opts \\ [])
 
-  def new({x_size, y_size} = xy_size, opts) when x_size > 0 and y_size > 0 do
-    matrix = matrix(xy_size)
+  def new({x_size, y_size} = xy_size, opts) when is_integer(x_size) and is_integer(y_size) do
+    with true <- size_is_valid?(x_size),
+         true <- size_is_valid?(y_size) do
+      matrix = matrix(xy_size)
 
-    case Keyword.get(opts, :elements, false) do
-      true -> {:ok, put_elements(matrix)}
-      false -> {:ok, matrix}
+      case Keyword.get(opts, :elements, false) do
+        true -> {:ok, put_elements(matrix)}
+        false -> {:ok, matrix}
+      end
+    else
+      false -> {:error, "Invalid board size"}
     end
   end
 
   def new(_, _), do: {:error, "Invalid board size"}
+
+  defp size_is_valid?(x), do: x > 0 and x < 13
 
   defp matrix({x_size, y_size}) do
     Enum.map(0..(x_size - 1), fn _ ->
