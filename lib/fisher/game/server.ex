@@ -31,7 +31,7 @@ defmodule Fisher.Game.Server do
     case get_session(user_id) do
       %Session{board: board} ->
         new_board = Board.move_rod(board, direction)
-        GenServer.cast(via_tuple(user_id), {:update_board, new_board})
+        GenServer.call(via_tuple(user_id), {:update_board, new_board})
     end
   end
 
@@ -48,7 +48,8 @@ defmodule Fisher.Game.Server do
   end
 
   @impl true
-  def handle_cast({:update_board, new_board}, session) do
-    {:noreply, %Session{session | board: new_board}}
+  def handle_call({:update_board, new_board}, _from, session) do
+    new_session = %{session | board: new_board}
+    {:reply, new_session, new_session}
   end
 end

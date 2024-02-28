@@ -13,15 +13,9 @@ defmodule Fisher.Discord.CommandHandler do
         data: %{name: "move", options: [%{value: direction}]},
         member: %{user_id: user_id}
       }) do
-    # BUG: Sometimes the board is not updated after the first move, need to investigate
-    with %Session{board: board} <- get_session(user_id) do
-      case direction do
-        "up" -> Server.move_rod(user_id, :up)
-        "down" -> Server.move_rod(user_id, :down)
-        "left" -> Server.move_rod(user_id, :left)
-        "right" -> Server.move_rod(user_id, :right)
-      end
-
+    with true <- Server.session_exists?(user_id) do
+      Server.move_rod(user_id, String.to_atom(direction))
+      %Session{board: board} = get_session(user_id)
       {:msg, Message.board_parser(board)}
     else
       error -> {:msg, error}
