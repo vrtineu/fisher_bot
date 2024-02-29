@@ -18,8 +18,7 @@ defmodule Fisher.Discord.Commands.MoveRod do
       }) do
     with true <- Server.session_exists?(user_id) do
       Server.move_rod(user_id, String.to_atom(direction))
-      %Game{board: board} = Game.get_session(user_id)
-      {:msg}
+      {:ok, %Game{board: board}} = Game.get_session(user_id)
 
       [content: Message.board_parser(board), ephemeral?: false]
     else

@@ -14,7 +14,7 @@ defmodule Fisher.Discord.Commands.Fish do
 
   @impl true
   def command(%{member: %{user_id: user_id}}) do
-    %Game{board: board} = Game.get_session!(user_id)
+    {:ok, %Game{board: board}} = Game.get_session!(user_id)
 
     [
       content: Message.board_parser(board),

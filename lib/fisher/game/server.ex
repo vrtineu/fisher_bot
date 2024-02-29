@@ -8,8 +8,7 @@ defmodule Fisher.Game.Server do
   #     Server API      #
   #######################
 
-  def start_link(user_id, board) do
-    session = Game.new(user_id, true, board)
+  def start_link(user_id, %Game{} = session) do
     GenServer.start_link(__MODULE__, session, name: via_tuple(user_id))
   end
 

@@ -1,4 +1,5 @@
 defmodule Fisher.Game do
+  alias Fisher.Game
   alias Fisher.Game.{Board, Server}
 
   require Logger
@@ -12,28 +13,35 @@ defmodule Fisher.Game do
   def get_session(user_id) do
     case Server.session_exists?(user_id) do
       true ->
-        Server.get_session(user_id)
+        {:ok, Server.get_session(user_id)}
 
       _ ->
-        "You're not fishing yet! Type /fish to start fishing!"
+        {:error, :no_session}
     end
   end
 
   def get_session!(user_id) do
     case Server.session_exists?(user_id) do
       true ->
-        Server.get_session(user_id)
+        {:ok, Server.get_session(user_id)}
 
       _ ->
-        create_new_session(user_id)
-        Server.get_session(user_id)
+        {:ok, create_new_game(user_id)}
     end
   end
 
-  def create_new_session(user_id) do
-    case Board.new({11, 11}, elements: true) do
-      {:ok, board} -> Server.start_link(user_id, board)
-      {:error, reason} -> Logger.error("Error creating board: #{reason}")
+  defp create_new_game(user_id) do
+    with {:ok, board} <- Board.new({11, 11}, elements: true),
+         %Game{} = game <- Game.new(user_id, true, board) do
+      Server.start_link(user_id, game)
+
+      game
+    else
+      {:error, reason} ->
+        Logger.error("Failed to create new game: #{reason}")
+
+      _ ->
+        Logger.error("Failed to create new game")
     end
   end
 end
