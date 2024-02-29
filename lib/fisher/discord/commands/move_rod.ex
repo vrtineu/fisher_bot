@@ -16,14 +16,15 @@ defmodule Fisher.Discord.Commands.MoveRod do
         data: %{options: [%{value: direction}]},
         member: %{user_id: user_id}
       }) do
-    with true <- Server.session_exists?(user_id) do
-      Server.move_rod(user_id, String.to_atom(direction))
-      {:ok, %Game{board: board}} = Game.get_session(user_id)
-
-      [content: Message.board_parser(board), ephemeral?: false]
+    with true <- Server.session_exists?(user_id),
+         {:ok, new_board} <- Game.move_rod(user_id, String.to_atom(direction)) do
+      [content: Message.board_parser(new_board), ephemeral?: false]
     else
       _ ->
-        [content: "You need to start a fishing session first.", ephemeral?: true]
+        [
+          content: "You need to start a game first. Type `/fish` to start a game.",
+          ephemeral?: true
+        ]
     end
   end
 

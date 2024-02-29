@@ -44,4 +44,16 @@ defmodule Fisher.Game do
         Logger.error("Failed to create new game")
     end
   end
+
+  def move_rod(user_id, direction) do
+    case get_session(user_id) do
+      {:ok, %Game{board: board}} ->
+        new_board = Board.move_rod(board, direction)
+        Server.update_board(user_id, new_board)
+        {:ok, new_board}
+
+      {:error, :no_session} = error ->
+        error
+    end
+  end
 end
