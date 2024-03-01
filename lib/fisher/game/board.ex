@@ -1,4 +1,10 @@
 defmodule Fisher.Game.Board do
+  @moduledoc """
+  The board module is responsible for creating and manipulating the game board.
+  """
+
+  @type board :: [atom()]
+
   @doc """
   Create a new board with the given size and optionally place elements on it.
 
@@ -20,7 +26,7 @@ defmodule Fisher.Game.Board do
       {:ok, [:water, :water, :water, :water, :water]}
 
   """
-  @spec new({integer(), integer()}, Keyword.t()) :: {:ok, list(atom())} | {:error, String.t()}
+  @spec new({integer(), integer()}, Keyword.t()) :: {:ok, board()} | {:error, String.t()}
   def new(xy_size, opts \\ [])
 
   def new({x_size, y_size} = xy_size, opts) when is_integer(x_size) and is_integer(y_size) do
@@ -73,6 +79,7 @@ defmodule Fisher.Game.Board do
     end)
   end
 
+  @spec move_rod(board(), :down | :left | :right | :up) :: list()
   def move_rod(matrix, :up) do
     [{x, y}] = find_player_rod(matrix)
     new_x = x - 1
@@ -101,6 +108,7 @@ defmodule Fisher.Game.Board do
     move_player_rod(matrix, {x, y}, {new_x, new_y})
   end
 
+  @spec find_player_rod(board()) :: [{integer(), integer()}]
   def find_player_rod(matrix) do
     for {row, row_index} <- Enum.with_index(matrix),
         {cell, cell_index} <- Enum.with_index(row),
@@ -109,11 +117,13 @@ defmodule Fisher.Game.Board do
     end
   end
 
+  @spec move_player_rod(board(), {integer(), integer()}, {integer(), integer()}) :: board()
   def move_player_rod(matrix, {x, y}, {new_x, new_y}) do
     matrix
     |> place_on_matrix({new_x, new_y}, :fishing_rod)
     |> remove_player_rod({x, y})
   end
 
+  @spec remove_player_rod(any(), {any(), any()}) :: board()
   def remove_player_rod(matrix, {x, y}), do: place_on_matrix(matrix, {x, y}, :water)
 end
