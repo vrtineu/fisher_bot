@@ -124,6 +124,6 @@ defmodule Fisher.Game.Board do
     |> remove_player_rod({x, y})
   end
 
-  @spec remove_player_rod(any(), {any(), any()}) :: board()
+  @spec remove_player_rod(board(), {integer(), integer()}) :: board()
   def remove_player_rod(matrix, {x, y}), do: place_on_matrix(matrix, {x, y}, :water)
 end
