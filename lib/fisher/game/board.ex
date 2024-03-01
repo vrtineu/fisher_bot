@@ -20,8 +20,7 @@ defmodule Fisher.Game.Board do
       {:ok, [:water, :water, :water, :water, :water]}
 
   """
-  @spec new({x_size :: integer, y_size :: integer}, elements :: boolean) ::
-          {:ok, list(list(atom))} | {:error, String.t()}
+  @spec new({integer(), integer()}, Keyword.t()) :: {:ok, list(atom())} | {:error, String.t()}
   def new(xy_size, opts \\ [])
 
   def new({x_size, y_size} = xy_size, opts) when is_integer(x_size) and is_integer(y_size) do
@@ -38,7 +37,7 @@ defmodule Fisher.Game.Board do
     end
   end
 
-  def new(_, _), do: {:error, "Invalid board size"}
+  def new(_, _opts), do: {:error, "Invalid board size"}
 
   defp size_is_valid?(x), do: x > 0 and x < 12
 
@@ -50,20 +49,16 @@ defmodule Fisher.Game.Board do
     end)
   end
 
+  defp random_position(matrix) do
+    x_max_size = length(matrix) - 1
+    y_max_size = length(hd(matrix)) - 1
+    {Enum.random(0..x_max_size), Enum.random(0..y_max_size)}
+  end
+
   defp put_elements(matrix) do
     matrix
-    |> place_fish(random_position())
-    |> place_player_rod(random_position())
-  end
-
-  defp random_position, do: {Enum.random(0..4), Enum.random(0..4)}
-
-  defp place_fish(matrix, {x, y}) do
-    place_on_matrix(matrix, {x, y}, :fish)
-  end
-
-  defp place_player_rod(matrix, {x, y}) do
-    place_on_matrix(matrix, {x, y}, :fishing_rod)
+    |> place_on_matrix(random_position(matrix), :fish)
+    |> place_on_matrix(random_position(matrix), :fishing_rod)
   end
 
   defp place_on_matrix(matrix, {x, y}, element) do
@@ -116,11 +111,9 @@ defmodule Fisher.Game.Board do
 
   def move_player_rod(matrix, {x, y}, {new_x, new_y}) do
     matrix
-    |> place_player_rod({new_x, new_y})
+    |> place_on_matrix({new_x, new_y}, :fishing_rod)
     |> remove_player_rod({x, y})
   end
 
-  def remove_player_rod(matrix, {x, y}) do
-    place_on_matrix(matrix, {x, y}, :water)
-  end
+  def remove_player_rod(matrix, {x, y}), do: place_on_matrix(matrix, {x, y}, :water)
 end
